@@ -19,7 +19,6 @@ const userSchema = new mongoose.Schema(
       min: 1000000000,
       max: 9999999999,
       unique: true,
-      required: [true, 'Please provide your Mobile No.!'],
     },
     email:{
       type: String,
@@ -35,7 +34,6 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, 'Please provide a password !'],
       minlength: 8,
       select: false,
     },
