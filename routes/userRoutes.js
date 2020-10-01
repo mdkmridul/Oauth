@@ -8,4 +8,6 @@ router.post('/gglLogin', userController.gglToken)
 router.post('/signup', userController.signUp)
 router.use(userController.protect)
 
+router.patch('/', userController.updateMe);
+
 module.exports = router;
