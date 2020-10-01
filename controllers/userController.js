@@ -3,7 +3,6 @@ const crypto = require('crypto');
 const User = require('../models/userModel');
 const Job = require('../models/jobModel');
 const { promisify } = require('util');
-const { json } = require('express');
 
 const signToken = (id) => {
   return jwt.sign({id}, process.env.JWT_SECRET, {
@@ -41,11 +40,18 @@ exports.gglToken = async(req, res, next) => {
         email: decoded.email,
         image: decoded.picture,
       })
-      res.status(200).json({
-        status:'Success',
+      res.status(201).json({
+        status:'Successfully Signed up',
         x,
       })
     }
+    const jobs = Job.find({_id: {$in: user.jobs}})
+    const token = signToken(user._id)
+    res.status(200).json({
+      status:'Success',
+      token,
+      jobs,
+    })
   } catch (err){
       res.status(500).json({
         status:'fail',
@@ -80,6 +86,18 @@ exports.protect = async(req, res, next) => {
         message:err.message,
       });
     };
+};
+
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.body.role)) {
+      res.status(403).json({
+        status: 'Fail',
+        message: 'You are not authorised to perform this task',
+      });
+    }
+    next();
+  }
 };
 
 exports.signUp = async (req, res) => {
@@ -128,7 +146,6 @@ exports.logIn = async (req, res) => {
         res.status(200).json({
           status: 'Success',
           jobs,
-          user,
           token,
         })
       }
@@ -146,14 +163,17 @@ exports.logIn = async (req, res) => {
   }
 };
 
-exports.restrictTo = (...roles) => {
-  return (req, res, next) => {
-    if (!roles.includes(req.body.role)) {
-      res.status(403).json({
-        status: 'Fail',
-        message: 'You are not authorised to perform this task',
-      })
-    }
-    next();
-  }
+exports.updateMe = async(req, res) => {
+
+  const filteredBody = filterObj(req.body, 'email')
+
+  updatedUser = User.findByIdAndUpdate(req.user.id, filteredBody, {
+    new: true,
+    runValidators: true,
+  });
+  
+  res.status(200).json({
+    status: 'Success',
+    updatedUser,
+  });
 };

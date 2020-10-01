@@ -53,12 +53,12 @@ const userSchema = new mongoose.Schema(
       ref: 'Job',
       },
     ],
-    jobStatus: [
-      {
-      type: String,
-      enum: ['Accepted', 'Pending', 'Rejected'],
-      },
-    ],
+    // jobStatus: [
+    //   {
+    //   type: String,
+    //   enum: ['Accepted', 'Pending', 'Rejected'],
+    //   },
+    // ],
   }
 )
 

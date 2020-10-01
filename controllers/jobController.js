@@ -16,10 +16,24 @@ exports.createJob = async(req, res) => {
   });
 };
 
-
 exports.getAllJobs = async(req, res) => {
+  try{
+    const jobs = Job.find({status:{$ne: 'Closed'}});
+    status(200).json({
+      status:'Success',
+      jobs,
+    })
+  } catch(err){
+    res.status(400).json({
+      status: 'Fail',
+      meassage: err.message,
+    })
+  }
+};
+
+exports.getMyJobs = async(req, res) => {
   try {
-    const jobs = await Job.find({_id:{$in: req.user.jobs}}, {status:{$ne: 'Closed'}})
+    const jobs = await Job.find({_id:{$in: req.user.jobs}}, {status:{$ne: 'Closed'}});
     
 
     res.status(200).json({
@@ -27,9 +41,9 @@ exports.getAllJobs = async(req, res) => {
       jobs,
     })
   } catch (err) {
-    res.status(404).json({
+    res.status(400).json({
       status: 'fail',
-      message: err,
+      message: err.message,
     })
   }
 };
@@ -64,9 +78,9 @@ exports.updateJob = async(req, res) => {
   } catch (err) {
     res.status(404).json({
       status: 'fail',
-      message: err,
+      message: err.message,
     })
-  }
+  };
 };
 
 exports.deleteJob = async(req, res) => {
@@ -102,4 +116,4 @@ exports.applyJob = async(req, res) => {
       message: err.message,
     })
   };
-} 
+}; 
